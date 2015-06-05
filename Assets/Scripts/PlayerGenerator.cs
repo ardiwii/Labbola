@@ -13,13 +13,16 @@ public class PlayerGenerator : MonoBehaviour {
 	Color home_color;
 	Color away_color;
 	public HideableUIScript clearDrawButton;
-	DragableScript[] homePlayersDragableScr;
-	DragableScript[] awayPlayersDragableScr;
-	VerticalLayoutGroup[] homeFormationsGrouping;
-	VerticalLayoutGroup[] awayFormationsGrouping;
+	public HideableUIScript homescroll;
+	public HideableUIScript awayscroll;
+	GameObject home_formation;
+	GameObject away_formation;
+
 
 	// Use this for initialization
 	void Start () {
+		home_formation = transform.FindChild("Home Formation").gameObject;
+		away_formation = transform.FindChild("Away Formation").gameObject;
 		//finished = false;
 	}
 	
@@ -137,14 +140,16 @@ public class PlayerGenerator : MonoBehaviour {
 		player.GetComponent<PlayerAttribute>().InitBio(biojson);
 	}
 
+
+	//---------------DRAG----------------------
 	public void enableDrag(){
-		foreach (VerticalLayoutGroup vlg in transform.FindChild("Home Formation").GetComponentsInChildren<VerticalLayoutGroup>()){
+		foreach (VerticalLayoutGroup vlg in home_formation.GetComponentsInChildren<VerticalLayoutGroup>()){
 			foreach(DragableScript ds in vlg.gameObject.transform.GetComponentsInChildren<DragableScript>()){
 				ds.enabled = true;
 				//ds.gameObject.GetComponent<Button>().enabled=false;
 			}
 		}
-		foreach (VerticalLayoutGroup vlg in transform.FindChild("Away Formation").GetComponentsInChildren<VerticalLayoutGroup>()){
+		foreach (VerticalLayoutGroup vlg in away_formation.GetComponentsInChildren<VerticalLayoutGroup>()){
 			foreach(DragableScript ds in vlg.gameObject.transform.GetComponentsInChildren<DragableScript>()){
 				ds.enabled = true;
 				//ds.gameObject.GetComponent<Button>().enabled=false;
@@ -153,13 +158,13 @@ public class PlayerGenerator : MonoBehaviour {
 	}
 
 	public void disableDrag(){
-		foreach (VerticalLayoutGroup vlg in transform.FindChild("Home Formation").GetComponentsInChildren<VerticalLayoutGroup>()){
+		foreach (VerticalLayoutGroup vlg in home_formation.GetComponentsInChildren<VerticalLayoutGroup>()){
 			foreach(DragableScript ds in vlg.gameObject.transform.GetComponentsInChildren<DragableScript>()){
 				ds.enabled = false;
 				//ds.gameObject.GetComponent<Button>().enabled=true;
 			}
 		}
-		foreach (VerticalLayoutGroup vlg in transform.FindChild("Away Formation").GetComponentsInChildren<VerticalLayoutGroup>()){
+		foreach (VerticalLayoutGroup vlg in away_formation.GetComponentsInChildren<VerticalLayoutGroup>()){
 			foreach(DragableScript ds in vlg.gameObject.transform.GetComponentsInChildren<DragableScript>()){
 				ds.enabled = false;
 				//ds.gameObject.GetComponent<Button>().enabled=true;
@@ -167,13 +172,15 @@ public class PlayerGenerator : MonoBehaviour {
 		}
 	}
 
+
+	//-------------------BUTTON------------------------------
 	public void enableButton(){
-		foreach (VerticalLayoutGroup vlg in transform.FindChild("Home Formation").GetComponentsInChildren<VerticalLayoutGroup>()){
+		foreach (VerticalLayoutGroup vlg in home_formation.GetComponentsInChildren<VerticalLayoutGroup>()){
 			foreach(Button btn in vlg.gameObject.transform.GetComponentsInChildren<Button>()){
 				btn.enabled = true;
 			}
 		}
-		foreach (VerticalLayoutGroup vlg in transform.FindChild("Away Formation").GetComponentsInChildren<VerticalLayoutGroup>()){
+		foreach (VerticalLayoutGroup vlg in away_formation.GetComponentsInChildren<VerticalLayoutGroup>()){
 			foreach(Button btn in vlg.gameObject.transform.GetComponentsInChildren<Button>()){
 				btn.enabled = true;
 			}
@@ -181,58 +188,73 @@ public class PlayerGenerator : MonoBehaviour {
 	}
 
 	public void disableButton(){
-		foreach (VerticalLayoutGroup vlg in transform.FindChild("Home Formation").GetComponentsInChildren<VerticalLayoutGroup>()){
+		foreach (VerticalLayoutGroup vlg in home_formation.GetComponentsInChildren<VerticalLayoutGroup>()){
 			foreach(Button btn in vlg.gameObject.transform.GetComponentsInChildren<Button>()){
 				btn.enabled = false;
 			}
 		}
-		foreach (VerticalLayoutGroup vlg in transform.FindChild("Away Formation").GetComponentsInChildren<VerticalLayoutGroup>()){
+		foreach (VerticalLayoutGroup vlg in away_formation.GetComponentsInChildren<VerticalLayoutGroup>()){
 			foreach(Button btn in vlg.gameObject.transform.GetComponentsInChildren<Button>()){
 				btn.enabled = false;
 			}
 		}
 	}
 
-//	IEnumerator Reenable(){
-//		yield return WaitForSeconds(0.5);
-//		foreach (VerticalLayoutGroup vlg in transform.FindChild("Home Formation").GetComponentsInChildren<VerticalLayoutGroup>()){
-//			vlg.enabled = false;
-//		}
-//		foreach (VerticalLayoutGroup vlg in transform.FindChild("Away Formation").GetComponentsInChildren<VerticalLayoutGroup>()){
-//			vlg.enabled = false;
-//		}
-//	}
+	public void swapOn(){
+		foreach (VerticalLayoutGroup vlg in home_formation.GetComponentsInChildren<VerticalLayoutGroup>()){
+			foreach(ButtonInitializerScript buttonScript in vlg.gameObject.transform.GetComponentsInChildren<ButtonInitializerScript>()){
+				buttonScript.swapEnabled();
+			}
+		}
+		foreach (VerticalLayoutGroup vlg in away_formation.GetComponentsInChildren<VerticalLayoutGroup>()){
+			foreach(ButtonInitializerScript buttonScript in vlg.gameObject.transform.GetComponentsInChildren<ButtonInitializerScript>()){
+				buttonScript.swapEnabled();
+			}
+		}
+	}
 
+	public void swapOff(){
+		foreach (VerticalLayoutGroup vlg in home_formation.GetComponentsInChildren<VerticalLayoutGroup>()){
+			foreach(ButtonInitializerScript buttonScript in vlg.gameObject.transform.GetComponentsInChildren<ButtonInitializerScript>()){
+				buttonScript.swapDisabled();
+			}
+		}
+		foreach (VerticalLayoutGroup vlg in away_formation.GetComponentsInChildren<VerticalLayoutGroup>()){
+			foreach(ButtonInitializerScript buttonScript in vlg.gameObject.transform.GetComponentsInChildren<ButtonInitializerScript>()){
+				buttonScript.swapDisabled();
+			}
+		}
+	}
+
+	//------------------FORMATIONLOCK------------------------------
 	public void resetFormation(){
-		foreach (VerticalLayoutGroup vlg in transform.FindChild("Home Formation").GetComponentsInChildren<VerticalLayoutGroup>()){
+		foreach (VerticalLayoutGroup vlg in home_formation.GetComponentsInChildren<VerticalLayoutGroup>()){
 			vlg.enabled = true;
 		}
-		foreach (VerticalLayoutGroup vlg in transform.FindChild("Away Formation").GetComponentsInChildren<VerticalLayoutGroup>()){
+		foreach (VerticalLayoutGroup vlg in away_formation.GetComponentsInChildren<VerticalLayoutGroup>()){
 			vlg.enabled = true;
 		}
-//		StartCoroutine(Reenable);
 	}
 
 	public void breakFormation(){
-		foreach (VerticalLayoutGroup vlg in transform.FindChild("Home Formation").GetComponentsInChildren<VerticalLayoutGroup>()){
+		foreach (VerticalLayoutGroup vlg in home_formation.GetComponentsInChildren<VerticalLayoutGroup>()){
 			vlg.enabled = false;
 		}
-		foreach (VerticalLayoutGroup vlg in transform.FindChild("Away Formation").GetComponentsInChildren<VerticalLayoutGroup>()){
+		foreach (VerticalLayoutGroup vlg in away_formation.GetComponentsInChildren<VerticalLayoutGroup>()){
 			vlg.enabled = false;
 		}
 	}
 
+	//----------------------DRAW MODE PALETTE------------------
 	public void formationToPalette(){
-		GameObject home_formation = transform.FindChild("Home Formation").gameObject;
-		GameObject away_formation = transform.FindChild("Away Formation").gameObject;
-		GameObject home_palette = home_formation.transform.FindChild("Palette").FindChild("Content").gameObject;
-		GameObject away_palette = away_formation.transform.FindChild("Palette").FindChild("Content").gameObject;
+		GameObject home_palette = transform.FindChild("Home Palette").FindChild("Content").gameObject;
+		GameObject away_palette = transform.FindChild("Away Palette").FindChild("Content").gameObject;
 		foreach (VerticalLayoutGroup vlg in home_formation.GetComponentsInChildren<VerticalLayoutGroup>()){
 			foreach(Button btn in vlg.gameObject.transform.GetComponentsInChildren<Button>()){
 				btn.transform.SetParent(home_palette.transform);
 			}
 		}
-		foreach (VerticalLayoutGroup vlg in transform.FindChild("Away Formation").GetComponentsInChildren<VerticalLayoutGroup>()){
+		foreach (VerticalLayoutGroup vlg in away_formation.GetComponentsInChildren<VerticalLayoutGroup>()){
 			foreach(Button btn in vlg.gameObject.transform.GetComponentsInChildren<Button>()){
 				btn.transform.SetParent(away_palette.transform);
 			}
@@ -241,6 +263,8 @@ public class PlayerGenerator : MonoBehaviour {
 
 	public void paletteOpen(){
 		clearDrawButton.Show();
+		homescroll.Show();
+		awayscroll.Show();
 		paletteBreak();
 		foreach (GameObject go in GameObject.FindGameObjectsWithTag("Formation")){
 			go.GetComponent<HideableUIScript>().Close();
@@ -252,6 +276,8 @@ public class PlayerGenerator : MonoBehaviour {
 
 	public void paletteClose(){
 		clearDrawButton.Close();
+		homescroll.Close();
+		awayscroll.Close();
 		paletteReset();
 		foreach (GameObject go in GameObject.FindGameObjectsWithTag("Formation")){
 			go.GetComponent<HideableUIScript>().Show();

@@ -18,8 +18,18 @@ public class TrailHeadGenerator : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		#if UNITY_ANDROID
-		if(Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began){
-			RaycastHit2D hitInfo = Physics2D.Raycast(new Vector2(camera.ScreenToWorldPoint(Input.GetTouch(0).position).x,camera.ScreenToWorldPoint(Input.GetTouch(0).position).y),Vector2.zero);
+			if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) {
+				Vector2 inputCoordinate = new Vector2(camera.ScreenToWorldPoint(Input.GetTouch(0).position).x,camera.ScreenToWorldPoint(Input.GetTouch(0).position).y);
+				activeTrail = (GameObject) Instantiate(TrailHead,inputCoordinate,new Quaternion());
+				activeTrail.transform.SetParent(transform);
+			}
+			if(Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Moved && activeTrail != null){
+				AutoDestruct ad = activeTrail.GetComponent<AutoDestruct>();
+				if(ad!=null){
+					ad.time = 5f;
+				}
+				activeTrail.transform.position = new Vector2(camera.ScreenToWorldPoint(Input.mousePosition).x,camera.ScreenToWorldPoint(Input.mousePosition).y);
+			}
 		#else
 		if (Input.GetMouseButtonDown (0)) {
 			Vector2 inputCoordinate = new Vector2(camera.ScreenToWorldPoint(Input.mousePosition).x,camera.ScreenToWorldPoint(Input.mousePosition).y);

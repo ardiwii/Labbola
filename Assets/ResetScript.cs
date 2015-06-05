@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class SwapScript : MonoBehaviour {
+public class ResetScript : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
@@ -11,5 +11,9 @@ public class SwapScript : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 	
+	}
+
+	public void Reset(){
+		Application.LoadLevel("tes");
 	}
 }

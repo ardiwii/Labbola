@@ -64,13 +64,16 @@ public class PlayerStatScript : MonoBehaviour {
 		}
 		GameObject statChart = BioTab.transform.FindChild("StatChart").gameObject;
 		GameObject statChartName = statChart.transform.FindChild("StatChart_Name").gameObject;
-//		for(int i = statChartName.transform.childCount-1;i>=0;i--){
-//			Destroy(statChartName.transform.GetChild(i));
-//		}
+		//statChart.GetComponent<HorizontalLayoutGroup>().enabled = false;
+		for(int i = statChartName.transform.childCount-1;i>=0;i--){
+			statChartName.transform.GetChild(i).GetComponent<LayoutElement>().enabled = false;
+			Destroy(statChartName.transform.GetChild(i).gameObject);
+		}
 		GameObject statChartValue = statChart.transform.FindChild("StatChart_Value").gameObject;
-//		for(int i = statChartValue.transform.childCount-1;i>=0;i--){
-//			Destroy(statChartValue.transform.GetChild(i));
-//		}
+		for(int i = statChartValue.transform.childCount-1;i>=0;i--){
+			statChartName.transform.GetChild(i).GetComponent<LayoutElement>().enabled = false;
+			Destroy(statChartValue.transform.GetChild(i).gameObject);
+		}
 		if(statChartName!=null && statChartValue!=null){
 			foreach (string parameter_name in plattrib.bio.Keys){
 				//Debug.Log ("key: " + parameter_name);
