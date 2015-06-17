@@ -14,15 +14,10 @@ public class ButtonInitializerScript : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		swapper = GameObject.FindGameObjectWithTag("Pitch").GetComponent<SwapperScript>();
-		plattrib = GetComponent<PlayerAttribute>();
+		plattrib = transform.parent.GetComponent<PlayerAttribute>();
 		if(plattrib!=null){
 			leftTeam = plattrib.leftteam;
-			if(leftTeam){
-				StatPanel = GameObject.FindGameObjectWithTag("PlayerPanelLeft");
-			}
-			else{
-				StatPanel = GameObject.FindGameObjectWithTag("PlayerPanelRight");
-			}
+			StatPanel = GameObject.FindGameObjectWithTag("PlayerPanels");
 		}
 
 		btn = GetComponent<Button>();
@@ -45,15 +40,14 @@ public class ButtonInitializerScript : MonoBehaviour {
 	}
 
 	public void selectForSwap(){
-		swapper.Select(gameObject);
+		swapper.Select(transform.parent.gameObject);
 	}
 
 	public void showPanel(){
 		//StatPanel.SetActive(true);
 		//StatPanel.transform.Translate(new Vector3(300f,0,0));
-		StatPanel.GetComponent<HideableUIScript>().Show();
-		Debug.Log(GetComponent<PlayerAttribute>().parameters.Count);
-		StatPanel.GetComponent<PlayerStatScript>().LoadPlayerStat(gameObject);
-		StatPanel.GetComponent<PlayerStatScript>().LoadPlayerBio(gameObject);
+//		StatPanel.GetComponent<PlayerStatScript>().LoadPlayerStat(gameObject);
+//		StatPanel.GetComponent<PlayerStatScript>().LoadPlayerBio(gameObject);
+		StatPanel.GetComponent<PlayerPanelController>().ShowPanel(transform.parent.gameObject);
 	}
 }

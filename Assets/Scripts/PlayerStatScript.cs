@@ -8,6 +8,8 @@ public class PlayerStatScript : MonoBehaviour {
 	private bool leftpanel;
 	public bool playerpanel; //false: teampanel
 
+	public bool inLeft;
+	public bool isShowing;
 	public Text paramNameText;
 	public Text paramValueText;
 
@@ -21,14 +23,16 @@ public class PlayerStatScript : MonoBehaviour {
 
 	}
 
+	public void LoadAndShow(GameObject go){
+		Show ();
+		LoadPlayerBio(go);
+		LoadPlayerStat(go);
+	}
+
 	public void LoadPlayerStat(GameObject playerSelected){	
 		GameObject StatTab = transform.FindChild("Stat Tab").gameObject;
 		PlayerAttribute plattrib = playerSelected.GetComponent<PlayerAttribute>();
 		if(plattrib!=null){
-			GameObject nameDisplay = StatTab.transform.FindChild("Name").gameObject;
-			if(nameDisplay!=null){
-				nameDisplay.GetComponent<Text>().text = plattrib.pl_name;
-			}
 			GameObject statChart = StatTab.transform.FindChild("ScrollView").FindChild("StatChart").gameObject;
 			GameObject statChartName = statChart.transform.FindChild("StatChart_Name").gameObject;
 			//statChart.GetComponent<HorizontalLayoutGroup>().enabled = false;
@@ -58,7 +62,7 @@ public class PlayerStatScript : MonoBehaviour {
 	public void LoadPlayerBio(GameObject playerSelected){
 		GameObject BioTab = transform.FindChild("Bio Tab").gameObject;
 		PlayerAttribute plattrib = playerSelected.GetComponent<PlayerAttribute>();
-		GameObject nameDisplay = BioTab.transform.FindChild("Name").gameObject;
+		GameObject nameDisplay = transform.FindChild("Name").gameObject;
 		if(nameDisplay!=null){
 			nameDisplay.GetComponent<Text>().text = plattrib.pl_name;
 		}
@@ -89,5 +93,15 @@ public class PlayerStatScript : MonoBehaviour {
 
 	public void Drag(){
 		transform.position = Input.mousePosition;
+	}
+
+	public void Show(){
+		GetComponent<HideableUIScript>().Show();
+		isShowing = true;
+	}
+
+	public void Close(){
+		GetComponent<HideableUIScript>().Close();
+		isShowing = false;
 	}
 }

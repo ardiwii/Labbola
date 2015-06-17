@@ -20,6 +20,6 @@ public class HeaderScript : MonoBehaviour {
 		JSONNode json = JSON.Parse (json_message);
 		transform.FindChild("Home Team Name").gameObject.transform.GetComponentInChildren<Text>().text = json["home_info"]["name"];
 		transform.FindChild("Away Team Name").gameObject.transform.GetComponentInChildren<Text>().text = json["away_info"]["name"];
-		transform.FindChild("Match Info").gameObject.transform.GetComponentInChildren<Text>().text = json["match_date"] + "\n" + json["stadium"];
+		transform.FindChild("Match Info").gameObject.transform.GetComponentInChildren<Text>().text =  json["stadium"] + "\n" + json["match_date"];
 	}
 }

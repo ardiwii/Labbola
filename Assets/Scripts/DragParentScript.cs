@@ -3,9 +3,11 @@ using System.Collections;
 using UnityEngine.EventSystems;
 
 public class DragParentScript : MonoBehaviour , IBeginDragHandler, IDragHandler, IEndDragHandler{
-	
-	public Camera camera;
-	
+
+	Camera camera;
+	public DragSnapper leftsnap;
+	public DragSnapper rightsnap;
+
 	// Use this for initialization
 	void Start () {
 		camera = GameObject.Find("Main Camera").GetComponent<Camera>()	;
@@ -23,12 +25,13 @@ public class DragParentScript : MonoBehaviour , IBeginDragHandler, IDragHandler,
 	
 	public void OnDrag(PointerEventData eventData)
 	{
-		transform.parent.parent.position = new Vector2(camera.ScreenToWorldPoint(Input.mousePosition).x,camera.ScreenToWorldPoint(Input.mousePosition).y);
+		transform.parent.position = new Vector2(camera.ScreenToWorldPoint(Input.mousePosition).x,camera.ScreenToWorldPoint(Input.mousePosition).y);
 	}
 	
 	public void OnEndDrag(PointerEventData eventData)
 	{
-		
+		leftsnap.Snap (transform.parent.gameObject);
+		rightsnap.Snap(transform.parent.gameObject);
 	}
 	
 	public void OnDrop(PointerEventData eventData)

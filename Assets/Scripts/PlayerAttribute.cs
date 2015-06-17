@@ -12,11 +12,15 @@ public class PlayerAttribute : MonoBehaviour {
 	public Hashtable parameters;
 	public Hashtable bio;
 	public bool leftteam;
+	Text namebottom;
+	Text nameside;
 
 	// Use this for initialization
 	void Awake () {
 		parameters = new Hashtable();
 		bio = new Hashtable();
+		namebottom = transform.FindChild("PlayerName").gameObject.GetComponent<Text>();
+		nameside = transform.FindChild("PlayerNameRight").gameObject.GetComponent<Text>();
 	}
 	
 	// Update is called once per frame
@@ -29,7 +33,8 @@ public class PlayerAttribute : MonoBehaviour {
 		id = json["id"];
 		pl_name = json["name"];
 		number = json["number"];
-		transform.GetChild(0).GetComponent<Text>().text = pl_name;
+		transform.GetChild(1).GetComponent<Text>().text = pl_name;
+		transform.GetChild(2).GetComponent<Text>().text = pl_name;
 		JSONArray stats = json["statistics"].AsArray;
 		for(int i = 0; i< stats.Count; i++){
 			JSONNode stat = JSON.Parse(stats[i].ToString());
@@ -37,6 +42,7 @@ public class PlayerAttribute : MonoBehaviour {
 			string value = stat["value"];
 			parameters.Add(param,value);
 		}
+		updateNameView();
 	}
 
 	public void InitBio(string JSON_message){
@@ -49,7 +55,18 @@ public class PlayerAttribute : MonoBehaviour {
 		bio.Add ("club",json["club"]["name"]);
 	}
 
+	public void updateNameView(){
+		if(transform.parent.name.Equals("Substitution") || transform.parent.name.Contains("Content")){
+			namebottom.enabled = false;
+			nameside.enabled = true;
+		}
+		else{
+			namebottom.enabled = true;
+			nameside.enabled = false;
+		}
+	}
+
 	public void setColor(Color color){
-		GetComponent<Image>().color = color;
+		GetComponentInChildren<Image>().color = color;
 	}
 }

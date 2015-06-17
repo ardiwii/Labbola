@@ -92,7 +92,7 @@ public class PlayerGenerator : MonoBehaviour {
 	}
 
 	public void GenerateAPlayer(string JSON_message, int poscode, bool hometeam){
-		GameObject newplayer = (GameObject) Instantiate(playerPrefab,gameObject.transform.position,new Quaternion());
+		GameObject newplayer = (GameObject) Instantiate(playerPrefab);
 		GameObject team;
 		GameObject position = new GameObject();
 		if(hometeam){
@@ -111,25 +111,25 @@ public class PlayerGenerator : MonoBehaviour {
 		case 1: position = team.transform.FindChild("Defender").gameObject;break;
 		case 2: position = team.transform.FindChild("Midfielder").gameObject;break;
 		case 3: position = team.transform.FindChild("Forward").gameObject;break;
-		case 4: position = team.transform.FindChild("Substitution").gameObject;break;
+		case 4: position = team.transform.FindChild("SubstitutionPanel").FindChild("Substitution").gameObject;break;
 		}
 		JSONNode player = JSON.Parse(JSON_message);
 		//Debug.Log(player.ToString());
 		StartCoroutine(LoadBio(newplayer,player["id"].AsInt));
-		newplayer.GetComponent<PlayerAttribute>().InitParams(player.ToString());
 		newplayer.transform.SetParent(position.transform,false);
-
+		newplayer.GetComponent<PlayerAttribute>().InitParams(player.ToString());
 
 		GameObject playerpallete = (GameObject) Instantiate(newplayer,gameObject.transform.position,new Quaternion());
 		if(hometeam){
-			playerpallete.transform.SetParent(transform.FindChild("Home Palette").FindChild("Content"),false);
+			playerpallete.transform.SetParent(transform.FindChild("Home Palette").FindChild("Scrollable").FindChild("Content"),false);
 		} 
 		else {
-			playerpallete.transform.SetParent(transform.FindChild("Away Palette").FindChild("Content"),false);
+			playerpallete.transform.SetParent(transform.FindChild("Away Palette").FindChild("Scrollable").FindChild("Content"),false);
 		}
 		playerpallete.tag = "PaletteItem";
-		playerpallete.GetComponent<DragableScript>().enabled = true;
-		playerpallete.GetComponent<Button>().enabled = false;
+		playerpallete.GetComponentInChildren<PlayerDragScript>().enabled = true;
+		playerpallete.GetComponentInChildren<Button>().enabled = false;
+		playerpallete.GetComponent<PlayerAttribute>().updateNameView();
 	}
 
 	public IEnumerator LoadBio(GameObject player, int player_id){
@@ -144,13 +144,13 @@ public class PlayerGenerator : MonoBehaviour {
 	//---------------DRAG----------------------
 	public void enableDrag(){
 		foreach (VerticalLayoutGroup vlg in home_formation.GetComponentsInChildren<VerticalLayoutGroup>()){
-			foreach(DragableScript ds in vlg.gameObject.transform.GetComponentsInChildren<DragableScript>()){
+			foreach(PlayerDragScript ds in vlg.gameObject.transform.GetComponentsInChildren<PlayerDragScript>()){
 				ds.enabled = true;
 				//ds.gameObject.GetComponent<Button>().enabled=false;
 			}
 		}
 		foreach (VerticalLayoutGroup vlg in away_formation.GetComponentsInChildren<VerticalLayoutGroup>()){
-			foreach(DragableScript ds in vlg.gameObject.transform.GetComponentsInChildren<DragableScript>()){
+			foreach(PlayerDragScript ds in vlg.gameObject.transform.GetComponentsInChildren<PlayerDragScript>()){
 				ds.enabled = true;
 				//ds.gameObject.GetComponent<Button>().enabled=false;
 			}
@@ -159,13 +159,13 @@ public class PlayerGenerator : MonoBehaviour {
 
 	public void disableDrag(){
 		foreach (VerticalLayoutGroup vlg in home_formation.GetComponentsInChildren<VerticalLayoutGroup>()){
-			foreach(DragableScript ds in vlg.gameObject.transform.GetComponentsInChildren<DragableScript>()){
+			foreach(PlayerDragScript ds in vlg.gameObject.transform.GetComponentsInChildren<PlayerDragScript>()){
 				ds.enabled = false;
 				//ds.gameObject.GetComponent<Button>().enabled=true;
 			}
 		}
 		foreach (VerticalLayoutGroup vlg in away_formation.GetComponentsInChildren<VerticalLayoutGroup>()){
-			foreach(DragableScript ds in vlg.gameObject.transform.GetComponentsInChildren<DragableScript>()){
+			foreach(PlayerDragScript ds in vlg.gameObject.transform.GetComponentsInChildren<PlayerDragScript>()){
 				ds.enabled = false;
 				//ds.gameObject.GetComponent<Button>().enabled=true;
 			}
@@ -238,10 +238,14 @@ public class PlayerGenerator : MonoBehaviour {
 
 	public void breakFormation(){
 		foreach (VerticalLayoutGroup vlg in home_formation.GetComponentsInChildren<VerticalLayoutGroup>()){
-			vlg.enabled = false;
+			if(!vlg.gameObject.name.Equals("Substitution")){
+				vlg.enabled = false;
+			}
 		}
 		foreach (VerticalLayoutGroup vlg in away_formation.GetComponentsInChildren<VerticalLayoutGroup>()){
-			vlg.enabled = false;
+			if(!vlg.gameObject.name.Equals("Substitution")){
+				vlg.enabled = false;
+			}
 		}
 	}
 
@@ -265,7 +269,7 @@ public class PlayerGenerator : MonoBehaviour {
 		clearDrawButton.Show();
 		homescroll.Show();
 		awayscroll.Show();
-		paletteBreak();
+		//paletteBreak();
 		foreach (GameObject go in GameObject.FindGameObjectsWithTag("Formation")){
 			go.GetComponent<HideableUIScript>().Close();
 		}
@@ -288,10 +292,10 @@ public class PlayerGenerator : MonoBehaviour {
 	}
 
 	public void paletteBreak(){
-		GameObject home_palette = transform.FindChild("Home Palette").FindChild("Content").gameObject;
-		GameObject away_palette = transform.FindChild("Away Palette").FindChild("Content").gameObject;
-		home_palette.GetComponent<GridLayoutGroup>().enabled = false;
-		away_palette.GetComponent<GridLayoutGroup>().enabled = false;
+		GameObject home_palette = transform.FindChild("Home Palette").FindChild("Scrollable").FindChild("Content").gameObject;
+		GameObject away_palette = transform.FindChild("Away Palette").FindChild("Scrollable").FindChild("Content").gameObject;
+		home_palette.GetComponent<VerticalLayoutGroup>().enabled = false;
+		away_palette.GetComponent<VerticalLayoutGroup>().enabled = false;
 	}
 
 	public void paletteReset(){
@@ -299,17 +303,17 @@ public class PlayerGenerator : MonoBehaviour {
 			PlayerAttribute pa = go.GetComponent<PlayerAttribute>();
 			if(pa!=null){
 				if(pa.leftteam){
-					go.transform.SetParent(GameObject.Find("Home Palette").transform.FindChild("Content"));
+					go.transform.SetParent(GameObject.Find("Home Palette").transform.FindChild("Scrollable").FindChild("Content"));
 				}
 				else{
-					go.transform.SetParent(GameObject.Find("Away Palette").transform.FindChild("Content"));
+					go.transform.SetParent(GameObject.Find("Away Palette").transform.FindChild("Scrollable").FindChild("Content"));
 				}
 			}
 		}
 
-		GameObject home_palette = transform.FindChild("Home Palette").FindChild("Content").gameObject;
-		GameObject away_palette = transform.FindChild("Away Palette").FindChild("Content").gameObject;
-		home_palette.GetComponent<GridLayoutGroup>().enabled = true;
-		away_palette.GetComponent<GridLayoutGroup>().enabled = true;
+		GameObject home_palette = transform.FindChild("Home Palette").FindChild("Scrollable").FindChild("Content").gameObject;
+		GameObject away_palette = transform.FindChild("Away Palette").FindChild("Scrollable").FindChild("Content").gameObject;
+		home_palette.GetComponent<VerticalLayoutGroup>().enabled = true;
+		away_palette.GetComponent<VerticalLayoutGroup>().enabled = true;
 	}
 }
