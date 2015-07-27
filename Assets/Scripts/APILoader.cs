@@ -70,4 +70,21 @@ public class APILoader : MonoBehaviour {
 			result(connect.text);
 		}
 	}
+
+	public IEnumerator LoadTimeline(System.Action<string> result){
+		Debug.Log("Loading Players");
+		WWW connect = new WWW("http://labbola-new.wiradipa.com/api/match-timeline?auth_token="+Token+"&match_id="+match_id);
+		yield return connect;
+		if(connect.isDone){
+			result(connect.text);
+		}
+	}
+
+	//timeline:
+	//http://labbola-new.wiradipa.com/api/match-timeline?auth_token="+token+"&match_id="+match_id
+	//
+	//contribution/heat map
+	//http://labbola-new.wiradipa.com/api/match-contributions?auth_token="+token+"&match_id="+match_id
+
+
 }

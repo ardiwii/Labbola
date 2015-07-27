@@ -12,6 +12,7 @@ public class PlayerAttribute : MonoBehaviour {
 	public Hashtable parameters;
 	public Hashtable bio;
 	public bool leftteam;
+	public bool subbedout;
 	Text namebottom;
 	Text nameside;
 
@@ -42,6 +43,7 @@ public class PlayerAttribute : MonoBehaviour {
 			string value = stat["value"];
 			parameters.Add(param,value);
 		}
+		name = pl_name;
 		updateNameView();
 	}
 

@@ -7,10 +7,11 @@ public class LineDrawingScript : MonoBehaviour {
 	public GameObject TrailHead;
 	public GameObject activeTrail;
 	public bool active;
+	float rotatespeed;
 
 	// Use this for initialization
 	void Start () {
-	
+		rotatespeed = 10f;
 	}
 	
 	// Update is called once per frame
@@ -34,6 +35,7 @@ public class LineDrawingScript : MonoBehaviour {
 					ad.time = 5f;
 				}
 				activeTrail.transform.position = new Vector2(camera.ScreenToWorldPoint(Input.mousePosition).x,camera.ScreenToWorldPoint(Input.mousePosition).y);
+				activeTrail.transform.Rotate(new Vector3(Input.GetAxis("Mouse Y"), Input.GetAxis("Mouse X"), 0), Time.deltaTime*rotatespeed);
 			}
 		}
 	}

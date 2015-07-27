@@ -25,7 +25,7 @@ public class PlayerDragScript : MonoBehaviour , IBeginDragHandler, IDragHandler,
 	{
 		if(gameObject.transform.parent.tag=="PaletteItem"){
 			gameObject.transform.parent.SetParent(GameObject.FindGameObjectWithTag("Pitch").transform);
-			PlayerAttribute plattrib = gameObject.transform.GetComponent<PlayerAttribute>();
+			PlayerAttribute plattrib = gameObject.transform.parent.GetComponent<PlayerAttribute>();
 			if(plattrib!=null){
 				plattrib.updateNameView();
 			}

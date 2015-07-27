@@ -3,6 +3,8 @@ using System.Collections;
 using SimpleJSON;
 using UnityEngine.UI;
 
+
+//seharusnya namanya PlayerController
 public class PlayerGenerator : MonoBehaviour {
 
 	public GameObject playerPrefab;
@@ -111,8 +113,11 @@ public class PlayerGenerator : MonoBehaviour {
 		case 1: position = team.transform.FindChild("Defender").gameObject;break;
 		case 2: position = team.transform.FindChild("Midfielder").gameObject;break;
 		case 3: position = team.transform.FindChild("Forward").gameObject;break;
-		case 4: position = team.transform.FindChild("SubstitutionPanel").FindChild("Substitution").gameObject;break;
+		case 4: position = team.transform.FindChild("SubstitutionPanel").FindChild("Substitution").gameObject;
+				newplayer.GetComponentInChildren<PlayerDragScript>().enabled = false;
+				break;
 		}
+
 		JSONNode player = JSON.Parse(JSON_message);
 		//Debug.Log(player.ToString());
 		StartCoroutine(LoadBio(newplayer,player["id"].AsInt));
@@ -145,13 +150,17 @@ public class PlayerGenerator : MonoBehaviour {
 	public void enableDrag(){
 		foreach (VerticalLayoutGroup vlg in home_formation.GetComponentsInChildren<VerticalLayoutGroup>()){
 			foreach(PlayerDragScript ds in vlg.gameObject.transform.GetComponentsInChildren<PlayerDragScript>()){
-				ds.enabled = true;
+				if(!ds.transform.parent.parent.name.Contains("Substitution")){
+					ds.enabled = true;
+				}
 				//ds.gameObject.GetComponent<Button>().enabled=false;
 			}
 		}
 		foreach (VerticalLayoutGroup vlg in away_formation.GetComponentsInChildren<VerticalLayoutGroup>()){
 			foreach(PlayerDragScript ds in vlg.gameObject.transform.GetComponentsInChildren<PlayerDragScript>()){
-				ds.enabled = true;
+				if(!ds.transform.parent.parent.name.Contains("Substitution")){
+					ds.enabled = true;
+				}
 				//ds.gameObject.GetComponent<Button>().enabled=false;
 			}
 		}
@@ -316,4 +325,124 @@ public class PlayerGenerator : MonoBehaviour {
 		home_palette.GetComponent<VerticalLayoutGroup>().enabled = true;
 		away_palette.GetComponent<VerticalLayoutGroup>().enabled = true;
 	}
+
+	//------------------HT/FT SIMULATION--------------------------
+	public void newFormation(int[] homefor, int[] awayfor){
+		GameObject homebench = home_formation.transform.FindChild("Bench").gameObject;
+		GameObject awaybench = home_formation.transform.FindChild("Bench").gameObject;
+		foreach(PlayerAttribute pa in home_formation.transform.FindChild("Defender").GetComponentsInChildren<PlayerAttribute>()){
+			pa.transform.SetParent(homebench.transform);
+		}
+		foreach(PlayerAttribute pa in home_formation.transform.FindChild("Midfielder").GetComponentsInChildren<PlayerAttribute>()){
+			pa.transform.SetParent(homebench.transform);
+		}
+		foreach(PlayerAttribute pa in home_formation.transform.FindChild("Forward").GetComponentsInChildren<PlayerAttribute>()){
+			pa.transform.SetParent(homebench.transform);
+		}
+		for(int i=0;i<homefor[0];i++){
+			homebench.transform.GetChild(0).SetParent(home_formation.transform.FindChild("Defender"));
+		}
+		for(int i=0;i<homefor[1];i++){
+			homebench.transform.GetChild(0).SetParent(home_formation.transform.FindChild("Midfielder"));
+		}
+		for(int i=0;i<homefor[2];i++){
+			homebench.transform.GetChild(0).SetParent(home_formation.transform.FindChild("Forward"));
+		}
+
+		foreach(PlayerAttribute pa in away_formation.transform.FindChild("Defender").GetComponentsInChildren<PlayerAttribute>()){
+			pa.transform.SetParent(awaybench.transform);
+		}
+		foreach(PlayerAttribute pa in away_formation.transform.FindChild("Midfielder").GetComponentsInChildren<PlayerAttribute>()){
+			pa.transform.SetParent(awaybench.transform);
+		}
+		foreach(PlayerAttribute pa in away_formation.transform.FindChild("Forward").GetComponentsInChildren<PlayerAttribute>()){
+			pa.transform.SetParent(awaybench.transform);
+		}
+		for(int i=0;i<awayfor[0];i++){
+			awaybench.transform.GetChild(0).SetParent(away_formation.transform.FindChild("Defender"));
+		}
+		for(int i=0;i<awayfor[1];i++){
+			awaybench.transform.GetChild(0).SetParent(away_formation.transform.FindChild("Midfielder"));
+		}
+		for(int i=0;i<awayfor[2];i++){
+			awaybench.transform.GetChild(0).SetParent(away_formation.transform.FindChild("Forward"));
+		}
+	}
+	
+	public void preMatchSim(){
+		int[] homepmformation = new int[3] {HomeFormation[1], HomeFormation[2], HomeFormation[3]};
+		int[] awaypmformation = new int[3] {AwayFormation[1], AwayFormation[2], AwayFormation[3]};
+		newFormation(homepmformation,awaypmformation);
+		ResetStatus();
+	}
+
+	public void halfTimeSim(){
+		int[] homehtformation = new int[3] {4, 3, 3};
+		int[] awayhtformation = new int[3] {3,5,2};
+		newFormation(homehtformation,awayhtformation);
+		ResetStatus();
+		FindPlayer("SERGIO VAN DIJK").GetComponent<StatusIconController>().Goal();
+		FindPlayer("IMANUEL WANGGAI").GetComponent<StatusIconController>().YellowCard();
+		FindPlayer("MOUAIAD ALAJAAN").GetComponent<StatusIconController>().YellowCard();
+		
+		PermaSwap(FindPlayer("OUDAY ABDULJAFFAL"), FindPlayer("KHALED ALBRIJAWI"));
+	}
+
+	public void fullTimeSim(){
+		int[] homeftformation = new int[3] {5, 3, 2};
+		int[] awayftformation = new int[3] {3,4,3};
+		newFormation(homeftformation,awayftformation);
+		ResetStatus();
+		FindPlayer("SERGIO VAN DIJK").GetComponent<StatusIconController>().Goal();
+		FindPlayer("IMANUEL WANGGAI").GetComponent<StatusIconController>().YellowCard();
+		FindPlayer("MOUAIAD ALAJAAN").GetComponent<StatusIconController>().YellowCard();
+
+		PermaSwap(FindPlayer("BOAZ T. ERWIN SOLOSSA"), FindPlayer("CRISTIAN GONZALES"));
+		PermaSwap(FindPlayer("IMANUEL WANGGAI"), FindPlayer("FIRMAN UTINA"));
+		PermaSwap(FindPlayer("OUDAY ABDULJAFFAL"), FindPlayer("KHALED ALBRIJAWI"));
+		PermaSwap(FindPlayer("MOUAIAD ALAJAAN"), FindPlayer("MAHMOUD ALYOUSSEF"));
+
+		FindPlayer("KHALED ALBRIJAWI").GetComponent<StatusIconController>().YellowCard();
+		FindPlayer("HAMDI ALMASSRI").GetComponent<StatusIconController>().RedCard();
+
+	}
+
+	
+	public void ResetStatus(){
+		foreach (VerticalLayoutGroup vlg in home_formation.GetComponentsInChildren<VerticalLayoutGroup>()){
+			foreach(StatusIconController sic in vlg.gameObject.transform.GetComponentsInChildren<StatusIconController>()){
+				sic.Reset();
+			}
+		}
+		foreach (VerticalLayoutGroup vlg in away_formation.GetComponentsInChildren<VerticalLayoutGroup>()){
+			foreach(StatusIconController sic in vlg.gameObject.transform.GetComponentsInChildren<StatusIconController>()){
+				sic.Reset();
+			}
+		}
+	}
+
+	GameObject FindPlayer(string pl_name){
+		foreach (VerticalLayoutGroup vlg in home_formation.GetComponentsInChildren<VerticalLayoutGroup>()){
+			foreach(StatusIconController sic in vlg.gameObject.transform.GetComponentsInChildren<StatusIconController>()){
+				if(sic.gameObject.name==pl_name){
+					return sic.gameObject;
+				}
+			}
+		}
+		foreach (VerticalLayoutGroup vlg in away_formation.GetComponentsInChildren<VerticalLayoutGroup>()){
+			foreach(StatusIconController sic in vlg.gameObject.transform.GetComponentsInChildren<StatusIconController>()){
+				if(sic.gameObject.name==pl_name){
+					return sic.gameObject;
+				}
+			}
+		}
+		return null;
+	}
+
+	void PermaSwap(GameObject subin, GameObject subout){
+		GetComponent<SwapperScript>().Swap(subin,subout);
+		subin.GetComponent<StatusIconController>().Subs();
+		subout.GetComponent<StatusIconController>().Subs();
+	}
+
 }
