@@ -26,8 +26,8 @@ public class APILoader : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		match_id = 1567;
-		Token = "ycmqtnhqpiKMig2nRsjW";
+//		match_id = 1567;
+//		Token = "ycmqtnhqpiKMig2nRsjW";
 
 		StartCoroutine("LoadMatchStats");
 	}
